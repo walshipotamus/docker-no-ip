@@ -1,4 +1,4 @@
-FROM alpine:3.7
+FROM arm64v8/alpine:3.7
 
 MAINTAINER David Coppit <david@coppit.org>
 
