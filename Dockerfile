@@ -32,7 +32,7 @@ RUN apk add expect libc6-compat \
 # RunIt stuff
   && adduser -h /home/user-service -s /bin/sh -D user-service -u 2000 \
   && chown user-service:user-service /home/user-service \
-  && mkdir -p /etc/run_once /etc/service
+  && mkdir -p /etc/run_once /etc/service /files
 
 # Boilerplate startup code
 COPY ./boot.sh /sbin/boot.sh
@@ -42,7 +42,7 @@ CMD [ "/sbin/boot.sh" ]
 VOLUME ["/config"]
 
 
-COPY ["parse_config_file.sh" "noip.conf", "create_config.exp", "/files/"]
+COPY ["parse_config_file.sh", "noip.conf", "create_config.exp", "/files/"]
 
 # run-parts ignores files with "." in them
 COPY parse_config_file.sh /etc/run_once/parse_config_file
