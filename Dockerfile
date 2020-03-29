@@ -1,37 +1,16 @@
 FROM alpine
 
-MAINTAINER David Coppit <david@coppit.org>
+MAINTAINER Walshipotamus <walshipotamus@gmail.com>
 
 ENV TERM=xterm-256color
 
-RUN true && \
-\
-echo "http://dl-cdn.alpinelinux.org/alpine/v3.7/community" >> /etc/apk/repositories && \
-apk --update upgrade && \
-\
-# Basics, including runit
-apk add bash curl htop runit make build-base&& \
-\
-# Needed by our code
-apk add expect libc6-compat && \
-\
-rm -rf /var/cache/apk/* && \
-\
-# RunIt stuff
-adduser -h /home/user-service -s /bin/sh -D user-service -u 2000 && \
-chown user-service:user-service /home/user-service && \
-mkdir -p /etc/run_once /etc/service
-
-# Boilerplate startup code
-COPY ./boot.sh /sbin/boot.sh
-RUN chmod +x /sbin/boot.sh
-CMD [ "/sbin/boot.sh" ]
-
-VOLUME ["/config"]
-
 ADD https://www.noip.com/client/linux/noip-duc-linux.tar.gz /usr/local/src/
 
-RUN set -x \
+RUN true \
+  && echo "http://dl-cdn.alpinelinux.org/alpine/v3.7/community" >> /etc/apk/repositories \
+  && apk --update upgrade \
+# Basics, including runit
+  && apk add bash curl htop runit make build-base&& \
   && mkdir /files \
   && chmod a+rw /files \
   && chmod a+rwX /usr/local/src \
@@ -42,8 +21,26 @@ RUN set -x \
 # The noip installer will autolaunch after make so we remove those lines
   && sed '/\.conf$/d' Makefile.old > Makefile \
   && make \
-  && make install \
-  && rm -rf /usr/local/src/noip-2.1.9-1 /usr/local/src/noip-duc-linux.tar.gz
+  && make install
+
+
+COPY --from=0 /usr/local/bin/noip2 /usr/local/bin/noip2
+
+# Needed by our code
+RUN apk add expect libc6-compat \
+  && rm -rf /var/cache/apk/* \
+# RunIt stuff
+  && adduser -h /home/user-service -s /bin/sh -D user-service -u 2000 \
+  && chown user-service:user-service /home/user-service \
+  && mkdir -p /etc/run_once /etc/service
+
+# Boilerplate startup code
+COPY ./boot.sh /sbin/boot.sh
+RUN chmod +x /sbin/boot.sh
+CMD [ "/sbin/boot.sh" ]
+
+VOLUME ["/config"]
+
 
 COPY ["parse_config_file.sh" "noip.conf", "create_config.exp", "/files/"]
 
