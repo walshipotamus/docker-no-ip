@@ -1,4 +1,4 @@
-FROM arm64v8/alpine:3.7
+FROM alpine
 
 MAINTAINER David Coppit <david@coppit.org>
 
@@ -10,7 +10,7 @@ echo "http://dl-cdn.alpinelinux.org/alpine/v3.7/community" >> /etc/apk/repositor
 apk --update upgrade && \
 \
 # Basics, including runit
-apk add bash curl htop runit && \
+apk add bash curl htop runit make build-base&& \
 \
 # Needed by our code
 apk add expect libc6-compat && \
@@ -29,13 +29,21 @@ CMD [ "/sbin/boot.sh" ]
 
 VOLUME ["/config"]
 
-ADD https://www.noip.com/client/linux/noip-duc-linux.tar.gz /files/
+ADD https://www.noip.com/client/linux/noip-duc-linux.tar.gz /usr/local/src/
 
 RUN set -x \
-  && chmod a+rwX /files \
-  && tar -C /files -x -f /files/noip-duc-linux.tar.gz noip-2.1.9-1/binaries/noip2-x86_64 \
-  && mv /files/noip-2.1.9-1/binaries/noip2-x86_64 /files \
-  && rm -rf /files/noip-2.1.9-1 /files/noip-duc-linux.tar.gz
+  && mkdir /files \
+  && chmod a+rw /files \
+  && chmod a+rwX /usr/local/src \
+  && cd /usr/local/src/ \
+  && tar -xvf /usr/local/src/noip-duc-linux.tar.gz \
+  && cd /usr/local/src/noip-2.1.9-1/  \
+  && mv Makefile Makefile.old \
+# The noip installer will autolaunch after make so we remove those lines
+  && sed '/\.conf$/d' Makefile.old > Makefile \
+  && make \
+  && make install \
+  && rm -rf /usr/local/src/noip-2.1.9-1 /usr/local/src/noip-duc-linux.tar.gz
 
 COPY ["noip.conf", "create_config.exp", "/files/"]
 
