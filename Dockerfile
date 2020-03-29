@@ -10,7 +10,7 @@ RUN true \
   && echo "http://dl-cdn.alpinelinux.org/alpine/v3.7/community" >> /etc/apk/repositories \
   && apk --update upgrade \
 # Basics, including runit
-  && apk add bash curl htop runit make build-base&& \
+  && apk add bash curl htop runit make build-base \
   && mkdir /files \
   && chmod a+rw /files \
   && chmod a+rwX /usr/local/src \
@@ -23,7 +23,7 @@ RUN true \
   && make \
   && make install
 
-
+FROM alpine
 COPY --from=0 /usr/local/bin/noip2 /usr/local/bin/noip2
 
 # Needed by our code
