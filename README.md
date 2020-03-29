@@ -12,11 +12,11 @@ Usage
 
 There are two modes of running this container. The first is with environment variables:
 
-`sudo docker run --name=noip -d -v /etc/localtime:/etc/localtime -v /config/dir/path:/config -e USERNAME=<username> -e PASSWORD=<password> -e DOMAINS=<domains> -e INTERVAL=<interval> coppit/no-ip`
+`sudo docker run --name=noip -d -v /etc/localtime:/etc/localtime -v /config/dir/path:/config -e USERNAME=<username> -e PASSWORD=<password> -e DOMAINS=<domains> -e INTERVAL=<interval> funwithkubes/rasp-noip:1.0`
 
 The second mode is with a config file. To create a template config file, run:
 
-`sudo docker run --name=noip -d -v /etc/localtime:/etc/localtime -v /config/dir/path:/config coppit/no-ip`
+`sudo docker run --name=noip -d -v /etc/localtime:/etc/localtime -v /config/dir/path:/config funwithkubes/rasp-noip:1.0`
 
 When run for the first time, a file named noip.conf will be created in the config dir, and the container will exit. Edit
 this file, adding your username (email), password, domains, and update interval. Then rerun the command to start the
