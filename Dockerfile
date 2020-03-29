@@ -9,8 +9,8 @@ ADD https://www.noip.com/client/linux/noip-duc-linux.tar.gz /usr/local/src/
 RUN true \
   && echo "http://dl-cdn.alpinelinux.org/alpine/v3.7/community" >> /etc/apk/repositories \
   && apk --update upgrade \
-# Basics, including runit
-  && apk add bash curl htop runit make build-base \
+# Packages for building noip2
+  && apk add bash curl htop make build-base \
   && mkdir /files \
   && chmod a+rw /files \
   && chmod a+rwX /usr/local/src \
@@ -27,12 +27,12 @@ FROM alpine
 COPY --from=0 /usr/local/bin/noip2 /usr/local/bin/noip2
 
 # Needed by our code
-RUN apk add expect libc6-compat \
+RUN apk add expect libc6-compat runit bash curl htop grep \
   && rm -rf /var/cache/apk/* \
 # RunIt stuff
   && adduser -h /home/user-service -s /bin/sh -D user-service -u 2000 \
   && chown user-service:user-service /home/user-service \
-  && mkdir -p /etc/run_once /etc/service /files
+  && mkdir -p /etc/run_once /etc/service /files /config
 
 # Boilerplate startup code
 COPY ./boot.sh /sbin/boot.sh
