@@ -10,6 +10,11 @@ function ts {
 
 #-----------------------------------------------------------------------------------------------------------------------
 
+if [ ! -f "$GENERATED_CONFIG_FILE" ]; then
+  echo "Generated config file not found, proceeding to generate new config"
+  /files/parse_config_file.sh
+fi
+
 while true
 do
   echo "$(ts) Launching the noip2 daemon"

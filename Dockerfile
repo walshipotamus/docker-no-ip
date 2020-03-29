@@ -45,11 +45,12 @@ RUN set -x \
   && make install \
   && rm -rf /usr/local/src/noip-2.1.9-1 /usr/local/src/noip-duc-linux.tar.gz
 
-COPY ["noip.conf", "create_config.exp", "/files/"]
+COPY ["parse_config_file.sh" "noip.conf", "create_config.exp", "/files/"]
 
 # run-parts ignores files with "." in them
 COPY parse_config_file.sh /etc/run_once/parse_config_file
 RUN chmod +x /etc/run_once/parse_config_file
+RUN chmod +x /files/parse_config_file.sh
 
 COPY noip.sh /etc/service/noip/run
 RUN chmod +x /etc/service/noip/run
